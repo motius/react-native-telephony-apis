@@ -53,6 +53,10 @@ public class RNReactNativeTelephonyModule extends ReactContextBaseJavaModule {
     }else{
       map.putString("callPrefix", null);
     }
+
+    String phoneNumber = manager.getLine1Number();
+    map.putString("phoneNumber", phoneNumber);
+
     promise.resolve(map);
 
   }
