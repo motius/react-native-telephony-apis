@@ -4,7 +4,8 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(getCountryCode:(RCTResponseSenderBlock) callback){
+RCT_REMAP_METHOD(getCountryCode, resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     NSString * plistPath = [[NSBundle mainBundle] pathForResource:@"DiallingCodes" ofType:@"plist"];
     NSDictionary *diallingCodesDictionary = [NSDictionary dictionaryWithContentsOfFile:plistPath];
     
@@ -25,7 +26,7 @@ RCT_EXPORT_METHOD(getCountryCode:(RCTResponseSenderBlock) callback){
         [result setValue:[NSNull null] forKey:@"isoCountryCode"];
         [result setValue:[NSNull null] forKey:@"callPrefix"];
     }
-    callback(@[[NSNull null], result]);
+    resolve(result);
 }
 
 @end
