@@ -13,4 +13,39 @@ Copy `ios/DiallingCodes.plist` to the folder where your `AppDelegate.m` is locat
 
 ## Android
 
-(In the works...)
+Edit the following files:
+
+* android/settings.gradle
+
+Add the following lines:
+
+```
+include ':react-native-telephony'
+project(':react-native-telephony').projectDir = new File(rootProject.projectDir, '../js/libs/react-native-telephony/android')
+```
+
+* android/app/build.gradle
+
+Add the following line to your dependencies:
+
+```
+dependencies {
+    // ...  
+    compile project(':react-native-telephony')
+}
+```
+
+* android/app/src/main/java/your/package/identifier/MainApplication.java
+
+Import `de.motius.RNReactNativeTelephony.RNReactNativeTelephonyPackage;` and create an instance:
+
+```java
+@Override
+protected List<ReactPackage> getPackages() {
+  return Arrays.<ReactPackage>asList(
+  //...
+    new RNReactNativeTelephonyPackage()
+  );
+}
+```
+
