@@ -1,0 +1,23 @@
+
+{
+  "name": "react-native-telephony",
+  "version": "0.0.1",
+  "description": "An interface to several native telephony methods",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-native",
+    "react-component",
+    "telephony",
+    "ios",
+    "android"
+  ],
+  "author": "Motius GmbH",
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native": "^0.39.2",
+    "react-native-windows": "^0.39.2"
+  }
+}
