@@ -53,6 +53,7 @@ public class RNReactNativeTelephonyModule extends ReactContextBaseJavaModule {
     }else{
       map.putString("callPrefix", null);
     }
+    promise.resolve(map);
   }
 
   @ReactMethod
