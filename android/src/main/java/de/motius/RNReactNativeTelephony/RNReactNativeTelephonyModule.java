@@ -59,6 +59,7 @@ public class RNReactNativeTelephonyModule extends ReactContextBaseJavaModule {
   public void getPhoneNumber(Promise promise){
     TelephonyManager manager = (TelephonyManager) this.reactContext.getSystemService(Context.TELEPHONY_SERVICE);
     String phoneNumber = manager.getLine1Number();
+    WritableMap map = Arguments.createMap();
     map.putString("phoneNumber", phoneNumber);
 
     promise.resolve(map);
