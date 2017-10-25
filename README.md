@@ -51,3 +51,6 @@ protected List<ReactPackage> getPackages() {
 }
 ```
 
+# Usage
+
+*Coming soon! Sorry :)*
