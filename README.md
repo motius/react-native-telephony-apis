@@ -1,6 +1,8 @@
 # react-native-telephony
 
-An interface to the [CoreTelephony](https://developer.apple.com/reference/coretelephony) framework and [TelephonyManager](https://developer.android.com/reference/android/telephony/TelephonyManager.html) (coming soon) for React Native.
+An interface to the [CoreTelephony](https://developer.apple.com/reference/coretelephony) framework and [TelephonyManager](https://developer.android.com/reference/android/telephony/TelephonyManager.html) for React Native.
+
+_Our npm package is coming soon! Feel free to join our efforts in the meantime :)
 
 # Setup
 
