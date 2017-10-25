@@ -1,4 +1,4 @@
-# react-native-telephony
+# react-native-telephony-apis
 
 An interface to the [CoreTelephony](https://developer.apple.com/reference/coretelephony) framework and [TelephonyManager](https://developer.android.com/reference/android/telephony/TelephonyManager.html) for React Native.
 
