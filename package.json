@@ -1,6 +1,6 @@
 
 {
-  "name": "react-native-telephony",
+  "name": "react-native-telephony-apis",
   "version": "0.0.1",
   "description": "An interface to several native telephony methods",
   "main": "index.js",
@@ -15,9 +15,5 @@
     "android"
   ],
   "author": "Motius GmbH",
-  "license": "MIT",
-  "peerDependencies": {
-    "react-native": "^0.39.2",
-    "react-native-windows": "^0.39.2"
-  }
+  "license": "MIT"
 }
