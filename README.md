@@ -57,6 +57,15 @@ protected List<ReactPackage> getPackages() {
 }
 ```
 
+#### Windows
+[Read the React Native setup instructions for UWP](https://github.com/ReactWindows/react-native)
+
+1. In Visual Studio add the `RNReactNativeTelephony.sln` in `node_modules/react-native-react-native-telephony-apis/windows/RNReactNativeTelephony.sln` folder to their solution, reference from their app.
+2. Open up your `MainPage.cs` app
+  - Add `using Cl.Json.RNReactNativeTelephony;` to the usings at the top of the file
+  - Add `new RNReactNativeTelephonyPackage()` to the `List<IReactPackage>` returned by the `Packages` method
+
+
 # Usage
 
 ## Get country code (iOS, Android):
