@@ -9,11 +9,41 @@ import android.telephony.TelephonyManager;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import android.content.Context;
 import android.R;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.Application;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Lo
 
-import java.util.Arrays;
+import android.telephony.CellIdentityCdma;
+import android.telephony.CellIdentityGsm;
+import android.telephony.CellIdentityLte;
+import android.telephony.CellIdentityWcdma;
+import android.telephony.CellInfo;
+import android.telephony.CellInfoCdma;
+import android.telephony.CellInfoGsm;
+import android.telephony.CellInfoLte;
+import android.telephony.CellInfoWcdma;
+import android.telephony.CellLocation;
+import android.telephony.CellSignalStrengthCdma;
+import android.telephony.CellSignalStrengthGsm;
+import android.telephony.CellSignalStrengthLte;
+import android.telephony.CellSignalStrengthWcdma;
+import java.util.Arrays
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import android.telephony.SignalStrength;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 
 public class RNReactNativeTelephonyModule extends ReactContextBaseJavaModule {
 
@@ -64,6 +94,126 @@ public class RNReactNativeTelephonyModule extends ReactContextBaseJavaModule {
     map.putString("phoneNumber", phoneNumber);
 
     promise.resolve(map);
+  }
+
+  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+  @ReactMethod
+  public void getCellInfo(Callback successCallback) {
+
+      WritableArray mapArray = Arguments.createArray();
+      TelephonyManager telephonyManager = (TelephonyManager) this.reactContext.getSystemService(Context.TELEPHONY_SERVICE);
+      List<CellInfo> cellInfo = telephonyManager.getAllCellInfo();
+
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || cellInfo == null) {
+          successCallback.invoke(mapArray);
+          return;
+      }
+
+      int i = 0;
+
+      for (CellInfo info : cellInfo) {
+          WritableMap mapCellIdentity = Arguments.createMap();
+          WritableMap mapCellSignalStrength = Arguments.createMap();
+          WritableMap map = Arguments.createMap();
+
+          map.putInt("key", i);
+
+          if (info instanceof CellInfoGsm) {
+              CellIdentityGsm cellIdentity = ((CellInfoGsm) info).getCellIdentity();
+              map.putString("connectionType", "GSM");
+
+              mapCellIdentity.putInt("cid", cellIdentity.getCid());
+              mapCellIdentity.putInt("lac", cellIdentity.getLac());
+              mapCellIdentity.putInt("mcc", cellIdentity.getMcc());
+              mapCellIdentity.putInt("mnc", cellIdentity.getMnc());
+              mapCellIdentity.putInt("psc", cellIdentity.getPsc());
+
+              CellSignalStrengthGsm cellSignalStrengthGsm = ((CellInfoGsm) info).getCellSignalStrength();
+              mapCellSignalStrength.putInt("asuLevel", cellSignalStrengthGsm.getAsuLevel());
+              mapCellSignalStrength.putInt("dBm", cellSignalStrengthGsm.getDbm());
+              mapCellSignalStrength.putInt("level", cellSignalStrengthGsm.getLevel());
+          } else if (info instanceof CellInfoWcdma && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+              CellIdentityWcdma cellIdentity = ((CellInfoWcdma) info).getCellIdentity();
+              map.putString("connectionType", "WCDMA");
+
+              mapCellIdentity.putInt("cid", cellIdentity.getCid());
+              mapCellIdentity.putInt("lac", cellIdentity.getLac());
+              mapCellIdentity.putInt("mcc", cellIdentity.getMcc());
+              mapCellIdentity.putInt("mnc", cellIdentity.getMnc());
+              mapCellIdentity.putInt("psc", cellIdentity.getPsc());
+
+              CellSignalStrengthWcdma cellSignalStrengthWcdma = ((CellInfoWcdma) info).getCellSignalStrength();
+
+              mapCellSignalStrength.putInt("asuLevel", cellSignalStrengthWcdma.getAsuLevel());
+              mapCellSignalStrength.putInt("dBm", cellSignalStrengthWcdma.getDbm());
+              mapCellSignalStrength.putInt("level", cellSignalStrengthWcdma.getLevel());
+          } else if (info instanceof CellInfoLte) {
+              if(info.isRegistered()) {
+                  mapCellIdentity.putBoolean("servingCellFlag", info.isRegistered());
+              } else {
+                  mapCellIdentity.putBoolean("servingCellFlag", info.isRegistered());
+              }
+              CellIdentityLte cellIdentity = ((CellInfoLte) info).getCellIdentity();
+              map.putString("connectionType", "LTE");
+
+              mapCellIdentity.putInt("cid", cellIdentity.getCi());
+              mapCellIdentity.putInt("tac", cellIdentity.getTac());
+              mapCellIdentity.putInt("mcc", cellIdentity.getMcc());
+              mapCellIdentity.putInt("mnc", cellIdentity.getMnc());
+              mapCellIdentity.putInt("pci", cellIdentity.getPci());
+
+              String cellIdHex = decToHex(cellIdentity.getCi());
+              String eNodeBHex = cellIdHex.substring(0, cellIdHex.length() - 2);
+              mapCellIdentity.putInt("eNodeB", hexToDec(eNodeBHex));
+              String localCellIdHex = cellIdHex.substring(cellIdHex.length() - 2, cellIdHex.length());
+              mapCellIdentity.putInt("localCellId", hexToDec(localCellIdHex));
+
+              CellSignalStrengthLte cellSignalStrengthLte = ((CellInfoLte) info).getCellSignalStrength();
+
+              mapCellSignalStrength.putInt("asuLevel", cellSignalStrengthLte.getAsuLevel());
+              mapCellSignalStrength.putInt("dBm", cellSignalStrengthLte.getDbm());
+              mapCellSignalStrength.putInt("level", cellSignalStrengthLte.getLevel());
+              mapCellSignalStrength.putInt("timingAdvance", cellSignalStrengthLte.getTimingAdvance());
+
+          } else if (info instanceof CellInfoCdma) {
+              CellIdentityCdma cellIdentity = ((CellInfoCdma) info).getCellIdentity();
+              map.putString("connectionType", "CDMA");
+
+              mapCellIdentity.putInt("basestationId", cellIdentity.getBasestationId());
+              mapCellIdentity.putInt("latitude", cellIdentity.getLatitude());
+              mapCellIdentity.putInt("longitude", cellIdentity.getLongitude());
+              mapCellIdentity.putInt("networkId", cellIdentity.getNetworkId());
+              mapCellIdentity.putInt("systemId", cellIdentity.getSystemId());
+
+              CellSignalStrengthCdma cellSignalStrengthCdma = ((CellInfoCdma) info).getCellSignalStrength();
+
+              mapCellSignalStrength.putInt("asuLevel", cellSignalStrengthCdma.getAsuLevel());
+              mapCellSignalStrength.putInt("cmdaDbm", cellSignalStrengthCdma.getCdmaDbm());
+              mapCellSignalStrength.putInt("cmdaEcio", cellSignalStrengthCdma.getCdmaEcio());
+              mapCellSignalStrength.putInt("cmdaLevl", cellSignalStrengthCdma.getCdmaLevel());
+              mapCellSignalStrength.putInt("dBm", cellSignalStrengthCdma.getDbm());
+              mapCellSignalStrength.putInt("evdoDbm", cellSignalStrengthCdma.getEvdoDbm());
+              mapCellSignalStrength.putInt("evdoEcio", cellSignalStrengthCdma.getEvdoEcio());
+              mapCellSignalStrength.putInt("evdoLevel", cellSignalStrengthCdma.getEvdoLevel());
+              mapCellSignalStrength.putInt("evdoSnr", cellSignalStrengthCdma.getEvdoSnr());
+              mapCellSignalStrength.putInt("level", cellSignalStrengthCdma.getLevel());
+          }
+
+          map.putMap("cellIdentity", mapCellIdentity);
+          map.putMap("cellSignalStrength", mapCellSignalStrength);
+
+          mapArray.pushMap(map);
+          i++;
+      }
+      successCallback.invoke(mapArray);
+  }
+
+  public String decToHex(int dec) {
+      return String.format("%x", dec);
+  }
+
+  public int hexToDec(String hex) {
+      return Integer.parseInt(hex, 16);
   }
 
   @Override
