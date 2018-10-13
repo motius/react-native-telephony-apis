@@ -58,12 +58,20 @@ public class RNReactNativeTelephonyModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getPhoneNumber(Promise promise){
-    TelephonyManager manager = (TelephonyManager) this.reactContext.getSystemService(Context.TELEPHONY_SERVICE);
-    String phoneNumber = manager.getLine1Number();
-    WritableMap map = Arguments.createMap();
-    map.putString("phoneNumber", phoneNumber);
+    Boolean callingOrSelfPermissionGranted = getCurrentActivity().checkCallingOrSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
+    Boolean readSMSPermissionGrantedForApi23Up = Build.VERSION.SDK_INT >= 23 && getCurrentActivity().checkCallingOrSelfPermission(Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED;
+    Boolean readPhoneNumberGrantedForApi26Up = Build.VERSION.SDK_INT >= 26 && getCurrentActivity().checkCallingOrSelfPermission("android.permission.READ_PHONE_NUMBERS") == PackageManager.PERMISSION_GRANTED;
+    if( callingOrSelfPermissionGranted || readSMSPermissionGrantedForApi23Up || readPhoneNumberGrantedForApi26Up )
+    {
+      String phoneNumber = manager.getLine1Number();
+      WritableMap map = Arguments.createMap();
+      map.putString("phoneNumber", phoneNumber);
 
-    promise.resolve(map);
+      promise.resolve(map);
+    }
+    else{
+      promise.reject("no permission");
+    }
   }
 
   @Override
